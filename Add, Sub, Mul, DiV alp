@@ -1,0 +1,55 @@
+a. Addition:
+1 ORG 0000H
+2 MOV R0, #40H
+3 MOV B,#50 ;B has 1st number
+4 MOV A,#60 ;A has 2nd number
+5 ADD A,B ;perform addition
+6 MOV B,#00 ;B has carry
+7 JNC SKIP
+8 MOV B,#01H
+9 SKIP: MOVX @R0,A
+10 INC R0
+11 MOV A,B
+12 MOVX @R0,A
+13 HERE: SJMP HERE
+ 14 END
+b. Subtraction:
+1 ORG 0000H
+2 MOV R0, #40H
+3 MOV B,#30 ;B has 1st number
+4 MOV A,#50 ;A has 2nd number
+5 CLR C ;Clear carry flag
+6 SUBB A,B
+7 MOV B,#00 ;B indicates borrow
+8 JNC SKIP
+9 MOV B,#0FFH ;FF indicates negative number
+10SKIP: MOVX @R0,A
+11 INC R0
+12 MOV A,B
+13 MOVX @R0,A
+14HERE: SJMP HERE
+15END
+c. Multiplication:
+1 ORG 0000H
+2 MOV R0, #40H
+3 MOV B,#5 ;B has 1st number
+4 MOV A,#12 ;A has 2nd number
+5 MUL AB ;16 bit product in AB with A having lower byte
+6 MOVX @R0,A
+7 INC R0
+8 MOV A,B
+9 MOVX @R0,A
+10 HERE: SJMP HERE
+11 END
+d. Division:
+1 ORG 0000H
+2 MOV R0, #40H
+3 MOV B,#2 ;B has 1st number
+4 MOV A,#12 ;A has 2nd number
+5 DIV AB 
+6 MOVX @R0,A
+7 INC R0
+8 MOV A,B
+9 MOVX @R0,A
+10 HERE: SJMP HERE
+11 END
