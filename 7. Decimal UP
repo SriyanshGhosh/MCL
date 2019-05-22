@@ -1,0 +1,72 @@
+#include <reg51.h>
+unsigned char dig1 = 0x00, dig2 = 0x00;
+unsigned char temp1 = 0x00, temp2 = 0x00; dig_count = 0x00;
+int count = 0x00;
+unsigned char led_code[10] = {0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F};
+bit tmr0_flg = 0, one_sec_flg = 0;
+void timer0_init(void);
+void Display(void);
+void main(void)
+{
+timer0_init(); // Initialize the Timer-0
+while(1)
+{
+while(tmr0_flg == 0);
+tmr0_flg = 0;
+dig_count ++;
+if(dig_count == 0x02)
+dig_count = 0x00;
+if(one_sec_flg == 1)
+{
+one_sec_flg = 0;
+dig1++;
+if(dig1== 0x0A)
+{ 
+dig1 = 0;
+dig2++;
+if(dig2 == 0x0A)
+dig2 = 0;
+}
+} //end of one_sec if
+ Display();
+} //end of while(1)
+} //end of main
+void timer0_init(void)
+{
+TMOD = 0x01; // Timer0 is configured in Mode-1,
+TL0 = 0xCC;
+TH0 = 0xF8; // For 2.0 ms Delay
+TCON = 0x00; // Clearing All Flags
+ET0 = 1; // Enabling Timer0 Interrupt
+TR0 = 1; // Turn ON the Timer0
+EA = 1; // Enabling Global Interrupt 
+}
+void timer0_isr(void) interrupt 1
+{
+TL0 = 0xCC; // Reloading Value into registers for every overflow
+TH0 = 0xF8;
+TF0 = 0; // Clearing Interrupt Flag
+tmr0_flg = 1;
+if(count == 500)
+{ 
+one_sec_flg = 1;
+count = 0x00;
+}
+else count ++;
+}
+void Display(void) // To display on 7-segments
+{
+if(dig_count == 0x00) // For Segment U19
+{
+temp1 = dig1;
+P0 = 0x30;
+}
+else if(dig_count == 0x01) // For Segment U18
+{
+temp1 = dig2;
+P0 = 0x20;
+}
+temp1 &= 0x0F;
+temp2 = led_code[temp1]; // Decoding to 7-segment
+P1 = temp2; // Taking Data Lines for 7-Seg
+}
