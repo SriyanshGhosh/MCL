@@ -1,0 +1,15 @@
+1 ORG 0000H
+2 MOV R7,#10 ; Initialize counter
+3 MOV R0,#20H ; Initialize the memory pointer
+4 MOV 40H,#00 ; Sum = 0
+5 MOV 41H,#00 ; Initial carry = 0
+6 BACK: MOV A,@R0 ; Get the first number
+7 ADD A, 040H ; Add with Sum
+8 DA A ; Adjust for BCD
+9 JNC NEXT
+10 INC 41H ; Store Carry
+11 NEXT: MOV 40H,A ; Save the lower byte of result
+12 INC R0 ; Increment memory pointer
+13 DJNZ R7,BACK ; If count != 0 repeat
+14 HERE: SJMP HERE
+15 END
