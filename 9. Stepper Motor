@@ -1,0 +1,39 @@
+#include <reg51.h>
+bit Dir=0;
+void ChangeDir( void ) interrupt 0 /* Interrupt Vector at 0003H */
+{
+Dir = ~Dir; /* Complement the Direction flag */
+}
+void delay( unsigned int x ) /* Delay Routine */
+{
+for( ; x > 0; x--);
+}
+void main()
+{
+unsigned char Val,i;
+EA=0x1; /* Enable Interrupt flag and Interrupt 0 */
+EX0=0x1;
+while(1)
+{
+if( Dir ) // If Dir Clockwise 
+{
+Val = 0x08;
+for(i=0;i<4;i++)
+{
+P0 = Val; // Write data for clock wise direction
+Val = Val >> 1;
+delay( 10000 );
+}
+}
+else // AntiClockwise Direction 
+{
+Val = 0x01;
+for(i=0;i<4;i++)
+{
+P0 = Val; // Write data for anticlock wise direction
+Val = Val << 1;
+delay( 10000 );
+}
+}
+}
+}
