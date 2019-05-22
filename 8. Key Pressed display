@@ -1,0 +1,83 @@
+#include <reg51.h>
+void scan(void);
+void get_key(void);
+void display(void);
+void delay(int);
+unsigned char scan_code[16] = { 0xEE, 0xDE, 0xBE, 0x7E,
+ 0xED, 0xDD, 0xBD, 0x7D,
+ 0xEB, 0xDB, 0xBB, 0x7B,
+ 0xE7, 0xD7, 0xB7, 0x77 };
+unsigned char led_code[16] = { 0x3f, 0x66, 0x7f, 0x39,
+ 0x06, 0x6d, 0x6f, 0x5e,
+ 0x5b, 0x7d, 0x77, 0x79,
+ 0x4f, 0x07, 0x7c, 0x71};
+unsigned char row, col, key, result = 0x3f;
+bit flag = 0;
+void main ()
+{
+while(1)
+{
+get_key();
+display();
+P3 = 0xFF;
+}
+} //end of main()
+void get_key(void) // get_key() function calls scan() function
+{ // on sensing a key and in scan() function it
+int i; // will compare the received scan code with 
+display(); // scan code lookup table and returns led code.
+flag = 0; //Rows are read from Port P0 is scan() function 
+while(flag == 0) // this function is in an eternal loop 
+// will return to main() only after getting a key
+{
+for(I = 0; I < 4; i++) // This for loop makes the one of the ROW low at 
+{ // one time .Then scan function is called 
+if( i == 0) row = 0xFE;
+else if(i == 1) row = 0xFD;
+else if(i == 2) row = 0xFB;
+else if(i == 3) row = 0xF7; 
+P0 = temp3; // each time temp3 value is ouput to port 0
+scan();
+delay(10); // on sensing a key scan() function will make flag = 1
+if(flag == 1) break;
+} // end of for
+if(flag == 1) break;
+} // end of while
+P3 = 0x00; // Enable U16
+for(i=0;i<16;i++)
+{
+if(scan_code[i] == key) // Convert scan code (key) to display code
+{
+result = led_code[i]; 
+break;
+}
+}
+} // end of get_key();
+void scan(void) // will return the scan code for the key pressed
+{ // Both row lines and column lines are connected to Port 0
+// Columns are connected to P0.4-P0.7 and P0.0-P0.3 are connected to rows
+col = P0; //read port0, mask with 0xF0h
+ col &= 0xf0;
+if(col != 0xf0) // Means a key is sensed
+{
+delay(30);
+delay(30); // give some delay for debouncing
+col = P0; // read the port again
+col = col & 0xf0;
+if(col != 0xf0) // debounce
+{
+flag = 1; // set the flag denoting a key is received
+key = col | (row & 0x0f);
+ } // to get the scan code of the key pressed
+else flag = 0x00;
+}
+} // end of scan()
+void display(void)
+{
+P1 = result;
+}
+void delay(int i)
+{
+int j;
+for(j = 0; j < i; j++);
+}
