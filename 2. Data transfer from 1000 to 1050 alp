@@ -1,0 +1,14 @@
+1 ORG 0000H
+2 MOV DPH,#10H ;Set DPH to higher byte of source and destination address
+3 MOV R0, #00H ;Load R0 with lower byte of source starting address
+4 MOV R1,#50H ;Load R1 with lower byte of destination starting address
+5 MOV R3,#0AH ;R3 is used as a counter
+6 BACK:MOV DPL, R0 ;Load DPL with lower byte of source address
+7 MOVX A,@dptr ;Transfer the contents of source to accumulator
+8 MOV DPL,R1 ;Load DPL with lower byte of destination address
+9 MOVX @dptr,A ;Data of accumulator stored in destination
+10 INC R0 ;Increment source pointer
+11 INC R1 ;Increment destination pointer
+12 DJNZ R3, BACK ;Decrement the R3 and repeat the loop until the R3 is zero
+13 HERE:SJMP HERE
+14 END
