@@ -1,0 +1,23 @@
+ORG 0000H
+2 MOV R0,#05H ; Size of list n-1
+3 L1: MOV DPTR,#9000H ;Memory pointer
+4 MOV A,R0
+5 MOV R1,A
+6 L2: MOVX A,@DPTR
+7 MOV B,A ;Load one element in B
+8 INC DPTR
+9 MOVX A,@DPTR ;Other element in A
+10 CLR C ;Clear carry
+11 MOV R2,A
+12 SUBB A,B ;Difference of two elements
+13 JNC NOXCHG ;If first element is less no exchange
+14 MOV A,B ;else exchange elements
+15 MOVX @DPTR,A
+16 DEC DPL
+17 MOV A,R2
+18 MOVX @DPTR,A
+19 INC DPTR
+20 NOXCHG: DJNZ R1,L2 ;Loop back
+21 DJNZ R0,L1 ;Loop for rest of elements
+22 HERE: SJMP HERE
+23 END
